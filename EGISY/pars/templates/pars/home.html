@@ -1,0 +1,12 @@
+{%extends 'pars/layout.html' %}
+{% block content %}
+<h1>fsafsdfs</h1>
+
+<form method="GET">
+  {% csrf_token %}
+  <input type="submit" value="cкачать" name="delete"/>
+</form>
+{% filter upper %}
+{{title}}
+{% endfilter %}
+{% endblock %}
