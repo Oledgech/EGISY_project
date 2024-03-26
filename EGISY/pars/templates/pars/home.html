@@ -1,12 +1,79 @@
 {%extends 'pars/layout.html' %}
 {% block content %}
-<h1>fsafsdfs</h1>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+  <a class="navbar-brand" href="#">ЕГИСУ проект</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
 
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item active">
+        <a class="nav-link" href="#">Год <span class="sr-only">(current)</span></a>
+      </li>
+        <li class="nav-item active">
+        <a class="nav-link" href="#">Исполнитель <span class="sr-only">(current)</span></a>
+      </li>
+<!--      <li class="nav-item">-->
+<!--        <a class="nav-link" href="#">Link</a>-->
+<!--      </li>-->
+
+    </ul>
+    <form class="form-inline my-2 my-lg-0" action="{% url 'index' %}" id="search-highlight">
+      <input class="form-control mr-sm-2" type="text" placeholder="Поиск" aria-label="Search" name="search" id="term">
+      <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="submit">Поиск</button>
+    </form>
+
+  </div>
+</nav>
+<h1>Таблица за 2020 год</h1>
+<br>
 <form method="GET">
   {% csrf_token %}
   <input type="submit" value="cкачать" name="delete"/>
 </form>
-{% filter upper %}
-{{title}}
-{% endfilter %}
+<br>
+<form method="post">
+  {% csrf_token %}
+  <input type="submit" value="заполнить" name="button1"/>
+</form>
+<br>
+<h1>Поиск по слову: {{ search_query}}</h1>
+<br>
+<table class="table table-bordered">
+  <thead>
+    <tr>
+        <th scope="col">Название</th>
+        <th scope="col">Номер</th>
+        <th scope="col">Исполнитель</th>
+        <th scope="col">ОКОГУ</th>
+        <th scope="col">Покупатель</th>
+        <th scope="col">Тип бюджета</th>
+        <th scope="col">Технологии</th>
+        <th scope="col">Приоритетное направление</th>
+        <th scope="col">Аннотация</th>
+    </tr>
+  </thead>
+  <tbody>
+
+{% for contact in page_obj %}
+<tr class='success'>
+        <td>{{ contact.name}}</td>
+        <td>{{ contact.registration_number}}</td>
+        <td>{{ contact.executor }}</td>
+        <td>{{ contact.okogu}}</td>
+        <td>{{ contact.customer}}</td>
+        <td>{{ contact.budget_type}}</td>
+        <td>{{ contact.critical_technologies}}</td>
+        <td>{{ contact.priority_directions}}</td>
+        <td>{{ contact.annotation}}</td>
+    </tr>
+{% endfor %}
+<ul>
+        {% for p in page_obj.paginator.page_range %}
+        <li>
+            <a href="?page={{ p }}">{{ p }}</a>
+        </li>
+        {% endfor %}
+    </ul>
 {% endblock %}

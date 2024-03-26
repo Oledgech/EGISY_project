@@ -1,19 +1,26 @@
 from django.db import models
 class Projects(models.Model):
-    name = models.CharField(max_length=250)
-    registration_number = models.IntegerField()
-    executor=models.CharField(max_length=100)
-    okogu=models.CharField(max_length=100)
-    customer=models.CharField(max_length=100)
-    budget_type=models.CharField(max_length=100)
-    nioktr_types=models.CharField(max_length=100)
-    priority_directions=models.CharField(max_length=200)
-    priority_directions_dop=models.CharField(max_length=200)
-    critical_technologies=models.CharField(max_length=200)
-    critical_technologies_dop=models.CharField(max_length=200)
-    scientific_technology_prioritie=models.CharField(max_length=200)
-    annotation=models.CharField(max_length=400)
-    start_date=models.DateField()
-    end_date= models.DateField()
-    coexecutors=models.CharField(max_length=100)
+    name = models.TextField(null=True)
+    registration_number = models.CharField(max_length=100,null=True)
+    executor=models.CharField(max_length=400,null=True)
+    okogu=models.TextField(null=True)
+    customer=models.CharField(max_length=200,null=True)
+    budget_type=models.CharField(max_length=400,null=True)
+    nioktr_types=models.CharField(max_length=400,null=True)
+    priority_directions=models.TextField(null=True)
+    priority_directions_dop=models.TextField(null=True)
+    critical_technologies=models.TextField(null=True)
+    critical_technologies_dop=models.TextField(null=True)
+    scientific_technology_prioritie=models.TextField(null=True)
+    annotation=models.TextField(null=True)
+    start_date=models.DateField(null=True)
+    end_date= models.DateField(null=True)
+    coexecutors=models.TextField(null=True)
+    objects = models.Manager()
+    def __str__(self):
+        return self.name
+    class Meta:
+        verbose_name='Проект'
+        verbose_name_plural = 'Проекты'
+
 
