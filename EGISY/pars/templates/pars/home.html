@@ -43,37 +43,47 @@
 <table class="table table-bordered">
   <thead>
     <tr>
-        <th scope="col">Название</th>
         <th scope="col">Номер</th>
+        <th scope="col">Название</th>
         <th scope="col">Исполнитель</th>
-        <th scope="col">ОКОГУ</th>
         <th scope="col">Покупатель</th>
         <th scope="col">Тип бюджета</th>
-        <th scope="col">Технологии</th>
-        <th scope="col">Приоритетное направление</th>
-        <th scope="col">Аннотация</th>
+        <th scope="col">Вид НИОКТР</th>
+        <th scope="col">Начало проекта</th>
+        <th scope="col">Конец проекта</th>
+         <th scope="col">Аннотация</th>
     </tr>
   </thead>
   <tbody>
 
 {% for contact in page_obj %}
 <tr class='success'>
-        <td>{{ contact.name}}</td>
         <td>{{ contact.registration_number}}</td>
+        <td>{{ contact.name}}</td>
         <td>{{ contact.executor }}</td>
-        <td>{{ contact.okogu}}</td>
         <td>{{ contact.customer}}</td>
         <td>{{ contact.budget_type}}</td>
-        <td>{{ contact.critical_technologies}}</td>
-        <td>{{ contact.priority_directions}}</td>
+        <td>{{ contact.nioktr_types}}</td>
+        <td>{{ contact.start_date}}</td>
+        <td>{{ contact.end_date}}</td>
         <td>{{ contact.annotation}}</td>
     </tr>
+
 {% endfor %}
-<ul>
+ <ul class="pagination pagination-sm">
         {% for p in page_obj.paginator.page_range %}
-        <li>
-            <a href="?page={{ p }}">{{ p }}</a>
+        <li class="page-item">
+
+            <a class="page-link" href="?page={{ p }}{% if request.GET.q %}&q=
+                      {{request.GET.q }}{% endif %}">{{ p }}</a>
+
         </li>
         {% endfor %}
+       <li class="page-item">
+           {% if page_obj.has_next %}
+            <a class="page-link" href="?page={{page_obj.next_page_number}}">Next</a>
+           {% endif %}
+    </li>
     </ul>
+ <a  class="btn btn-success" href="/export">export</a>
 {% endblock %}

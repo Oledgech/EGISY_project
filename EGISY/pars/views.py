@@ -1,11 +1,21 @@
-from django.http import HttpResponse
+
 import requests
-from .models import Projects
 from django.shortcuts import render
 from django.core.paginator import Paginator
 from django.db.models import Q
-from termcolor import colored
 import json
+from django.http import HttpResponse
+from django.contrib import admin
+from import_export.admin import ImportExportModelAdmin
+from import_export import resources
+from import_export import fields
+from import_export.widgets import ForeignKeyWidget
+from .models import Projects
+
+class ProjectsResource(resources.ModelResource):
+    class Meta:
+        model = Projects
+
 def index(request):
     print(request)
     search_query=request.GET.get('search','')
@@ -14,7 +24,7 @@ def index(request):
 
     else:
         projects = Projects.objects.all()
-    paginator = Paginator(projects, 10)
+    paginator = Paginator(projects, 100)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
     if 'delete' in request.GET:
@@ -64,12 +74,21 @@ def index(request):
             i += 1
             proj.save()
 
-    data={
-        'title':'Тест',
-    }
     return render(request, "pars/home.html",{'projects':projects,'search_query':search_query,'page_obj': page_obj,})
 
+def export(request):
+    search_query = request.GET.get('search', '')
+    if search_query:
+        projects = Projects.objects.filter(Q(name__icontains=search_query) | Q(annotation__icontains=search_query) | Q(
+            customer__icontains=search_query) | Q(executor__icontains=search_query))
+    else:
+            projects = Projects.objects.all()
+    person_resource = ProjectsResource()
+    dataset = person_resource.export()
+    response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="persons.xls"'
 
+    return response
 
 
 

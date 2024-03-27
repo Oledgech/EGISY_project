@@ -1,0 +1,26 @@
+.searchtext {
+  font-size: 16px;
+  font-weight: bold;
+  height: 27px;
+  padding: 0 6px 0;
+  width: 250px;
+  /*делаем стильную границу вокруг поля*/
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+/* выбираем цвет подсветки — светло-зелёный*/
+.highlight {
+  background: #4cff00;
+}
+/*кнопка поиска*/
+.search-button {
+  background-color: #0b2f3f;
+  font-weight: bold;
+  font-size: 12px;
+  /*устанавливаем высоту кнопки*/
+  height: 28px;
+  margin: 0;
+  color: #ffffff;
+  padding: 6px;
+  /*тоже делаем стильную границу у кнопки*/
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
