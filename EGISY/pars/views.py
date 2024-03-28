@@ -1,7 +1,7 @@
 
 import requests
 from django.shortcuts import render
-from django.core.paginator import Paginator
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 import json
 from django.http import HttpResponse
@@ -11,19 +11,20 @@ from import_export import resources
 from import_export import fields
 from import_export.widgets import ForeignKeyWidget
 from .models import Projects
-
+import xlsxwriter
+import csv
+import pandas as pd
 class ProjectsResource(resources.ModelResource):
+
     class Meta:
         model = Projects
+        fields = ['name', 'annotation', 'customer', 'executor']
+
+
 
 def index(request):
     print(request)
-    search_query=request.GET.get('search','')
-    if search_query:
-        projects = Projects.objects.filter(Q(name__icontains=search_query) | Q(annotation__icontains=search_query) | Q(customer__icontains=search_query) | Q(executor__icontains=search_query))
-
-    else:
-        projects = Projects.objects.all()
+    projects = Projects.objects.all()
     paginator = Paginator(projects, 100)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -73,20 +74,39 @@ def index(request):
                 proj.coexecutors =''
             i += 1
             proj.save()
+    return render(request, "pars/home.html",{'projects':projects,'page_obj': page_obj})
 
-    return render(request, "pars/home.html",{'projects':projects,'search_query':search_query,'page_obj': page_obj,})
+def search(request):
 
-def export(request):
     search_query = request.GET.get('search', '')
+    context = {}
     if search_query:
         projects = Projects.objects.filter(Q(name__icontains=search_query) | Q(annotation__icontains=search_query) | Q(
             customer__icontains=search_query) | Q(executor__icontains=search_query))
+        template_name = "pars/search.html"
     else:
             projects = Projects.objects.all()
+            template_name = "pars/home.html"
+    paginator = Paginator(projects, 100)
+    page_number = request.GET.get('page')
+
+    page_obj = paginator.get_page(page_number)
+    return render(request, template_name,
+                  {'search_query': search_query, 'page_obj': page_obj,"context":context })
+def export(request):
+    search_query = 'Разработка рекомендаций по совершенствованию алгоритмов расчета'
+    projects = Projects.objects.filter(Q(name__icontains=search_query) | Q(annotation__icontains=search_query) | Q(
+        customer__icontains=search_query) | Q(executor__icontains=search_query))
     person_resource = ProjectsResource()
     dataset = person_resource.export()
-    response = HttpResponse(dataset.xls, content_type='application/vnd.ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="persons.xls"'
+    response = HttpResponse(content_type='application/vnd.ms-excel')
+    response['Content-Disposition'] = 'attachment;  filename="persons.xls"'
+    writer = xlsxwriter.Workbook(response)
+    worksheet1 = writer.add_worksheet()
+
+    for e in projects:
+
+        e .to_excel(response)
 
     return response
 

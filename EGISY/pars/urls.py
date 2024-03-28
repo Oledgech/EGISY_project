@@ -7,4 +7,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", views.index, name="index"),
     path("export/", views.export, name="export"),
+    path("search/", views.search, name="search"),
+
 ]

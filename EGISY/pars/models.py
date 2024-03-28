@@ -17,6 +17,7 @@ class Projects(models.Model):
     end_date= models.DateField(null=True)
     coexecutors=models.TextField(null=True)
     objects = models.Manager()
+
     def __str__(self):
         return self.name
     class Meta:
