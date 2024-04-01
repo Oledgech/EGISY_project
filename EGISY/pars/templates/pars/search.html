@@ -5,9 +5,32 @@
 <h1>Найдено записей: {{c}}</h1>
 <h1>Поиск по слову: {{ search_query}}</h1>
 <br>
+<div class="btn-group">
+  <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Экспорт
+  </button>
+  <form method="GET" action="{% url 'export' %}">
+  {% csrf_token %}
+
+  <div class="dropdown-menu">
+      <input type="hidden" required name = 'projects' value = {{search_query}} >
+      <input type="hidden" required name = 'option' value = {{option_query}} >
+      {% for lan in ye%}
+            <input type="hidden" required name="year_{{lan}}" value = {{lan}}>
+                          {% endfor %}
+
+    <button  type="submit" class="dropdown-item" name="Excel" >Excel</button>
+    <button type="submit" class="dropdown-item" name="JSON" >JSON</button>
+    <button type="submit" class="dropdown-item" name="YAML" >YAML</button>
+    <button type="submit" class="dropdown-item" name="CSV" >CSV</button>
+  </div>
+  </form>
+</div>
+<br>
+<br>
 {% bootstrap_paginate page_obj range=30 %}
 <br>
-<h1>Поиск по vsdaслову: {% for i in ye %}{{ i }}{% endfor %}</h1>
+<h1>Примененные фильтры: {% if search_query%}<button class="btn btn-outline-success my-2 my-sm-0">{{search_query}}</button> {% endif %}{% if option_query%}<button class="btn btn-outline-success my-2 my-sm-0">{{option_query}}</button> {% endif %} {% for i in ye %}<button class="btn btn-outline-success my-2 my-sm-0">{{ i }}</button> {% endfor %} </h1>
 <br>
 <table class="table table-bordered">
   <thead>
