@@ -4,6 +4,7 @@ from django.shortcuts import render
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.db.models import Q
 import json
+import os
 from django.http import HttpResponse
 from django.contrib import admin
 from import_export.admin import ImportExportModelAdmin
@@ -14,17 +15,28 @@ from .models import Projects
 import xlsxwriter
 import csv
 import pandas as pd
+import time
+import threading
+import random
+from datetime import datetime
+import validators
 class ProjectsResource(resources.ModelResource):
 
     class Meta:
         model = Projects
-        fields = ['name', 'annotation', 'customer', 'executor']
 
 
 
 def index(request):
     print(request)
+    year = datetime.now().year
+    num = 2016
+    ye = []
+    while num <= year:
+        ye.append(num)
+        num += 1
     projects = Projects.objects.all()
+    c = Projects.objects.all().distinct().count()
     paginator = Paginator(projects, 100)
     page_number = request.GET.get('page')
     page_obj = paginator.get_page(page_number)
@@ -37,8 +49,6 @@ def index(request):
                 file.write(response.content)
             number += 1
     if 'button1' in request.POST:
-        proj=Projects()
-        i = 1
         with open('2020.json', encoding='utf-8') as f:
             my_dict = json.load(f)
         for i in range(len(my_dict["cards"])):
@@ -74,41 +84,89 @@ def index(request):
                 proj.coexecutors =''
             i += 1
             proj.save()
-    return render(request, "pars/home.html",{'projects':projects,'page_obj': page_obj})
+    return render(request, "pars/home.html",{'projects':projects,'page_obj': page_obj,'ye': ye,'c': c})
 
 def search(request):
-
     search_query = request.GET.get('search', '')
-    context = {}
-    if search_query:
-        projects = Projects.objects.filter(Q(name__icontains=search_query) | Q(annotation__icontains=search_query) | Q(
-            customer__icontains=search_query) | Q(executor__icontains=search_query))
-        template_name = "pars/search.html"
+    option_query = request.GET.get('type')
+    string1='year'
+    num = 2016
+    ye = []
+    proj=[]
+    yet = []
+    while num <= datetime.now().year:
+        year_query = request.GET.get(string1+'_'+str(num))
+        if(year_query):
+            ye.append(year_query)
+        yet.append(num)
+        num += 1
+    c=0
+    if len(ye) == 0:
+        projects = Projects.objects.filter((Q(name__icontains=search_query) | Q(annotation__icontains=search_query) | Q(
+            customer__icontains=search_query) | Q(executor__icontains=search_query)), Q(nioktr_types__icontains=option_query))
+        proj.append(projects)
+        paginator = Paginator(projects, 100)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+        c = Projects.objects.filter((
+                    Q(name__icontains=search_query) | Q(annotation__icontains=search_query) | Q(
+                customer__icontains=search_query) | Q(executor__icontains=search_query)), Q(nioktr_types__icontains=option_query)).distinct().count()
     else:
-            projects = Projects.objects.all()
-            template_name = "pars/home.html"
-    paginator = Paginator(projects, 100)
-    page_number = request.GET.get('page')
-
-    page_obj = paginator.get_page(page_number)
+        for i in ye:
+            projects = Projects.objects.filter(Q(
+                start_date__icontains=i),(Q(name__icontains=search_query) | Q(annotation__icontains=search_query) | Q( customer__icontains=search_query) | Q(executor__icontains=search_query)), Q(nioktr_types__icontains=option_query))
+            proj.append(projects)
+            c+= Projects.objects.filter(Q(start_date__icontains=i),(Q(name__icontains=search_query) | Q(annotation__icontains=search_query) | Q( customer__icontains=search_query) | Q(executor__icontains=search_query)), Q(nioktr_types__icontains=option_query)).distinct().count()
+        xs = [None] * c
+        paginator = Paginator( xs, 100)
+        page_number = request.GET.get('page')
+        page_obj = paginator.get_page(page_number)
+    template_name = "pars/search.html"
     return render(request, template_name,
-                  {'search_query': search_query, 'page_obj': page_obj,"context":context })
+                  {'page_obj': page_obj,'proj': proj,'ye':ye ,'c':c,'option_query':option_query,'search_query':search_query})
 def export(request):
-    search_query = 'Разработка рекомендаций по совершенствованию алгоритмов расчета'
+    search_query = 'мурманск'
     projects = Projects.objects.filter(Q(name__icontains=search_query) | Q(annotation__icontains=search_query) | Q(
         customer__icontains=search_query) | Q(executor__icontains=search_query))
     person_resource = ProjectsResource()
-    dataset = person_resource.export()
-    response = HttpResponse(content_type='application/vnd.ms-excel')
+    dataset = person_resource.export(projects)
+    response = HttpResponse(dataset.xls,content_type='application/vnd.ms-excel')
     response['Content-Disposition'] = 'attachment;  filename="persons.xls"'
-    writer = xlsxwriter.Workbook(response)
-    worksheet1 = writer.add_worksheet()
-
-    for e in projects:
-
-        e .to_excel(response)
-
     return response
 
+def full(request):
+    id_query = request.GET.get('id')
 
+    projects = Projects.objects.filter(Q(id=id_query) )
+    return render(request, "pars/full_display.html", {'projects': projects})
+def year(request):
+    year_query = request.GET.get('year')
 
+    projects = Projects.objects.filter(Q(start_date__icontains=year_query) )
+    paginator = Paginator(projects, 100)
+    page_number = request.GET.get('page')
+    page_obj = paginator.get_page(page_number)
+    return render(request, "pars/home.html", {'page_obj': page_obj, "year_query":year_query})
+
+# delay = 10 #время между вызовами функции в секундах, в данном примере - сутки
+#
+# def do_something(): #вызываемая в отдельном потоке функция в ней и производим действия из следующего шага
+#     number = datetime.now().year
+#     if os.path.isfile(str(number) + '.json'):
+#         print("Файл существует")
+#     else:
+#         url = 'https://www.rosrid.ru/api/open-data?year=' + str(number) + '&month=all_months&card_type=nioktr'
+#         check = validators.url("Удовлетворяет ли ваш URL необходимым требованиям? :",url)
+#         print(check)
+#         response = requests.get(url, verify=False)
+#         with open(str(number) + '.json', 'wb') as file:
+#                 file.write(response.content)
+# s=0
+# while True:
+#     time.sleep(delay)
+#     thread = threading.Thread(target=do_something)
+#     thread.start()
+#     s+=1
+#     if s==1:
+#         s=0
+#         break

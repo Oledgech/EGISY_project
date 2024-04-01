@@ -7,13 +7,12 @@ $(document).ready(function(){
     localStorage.setItem('secretIdentity', term)
 
   });
-  let test = localStorage.getItem('secretIdentity');
-  console.log(test);
-  var term = "";
+  var test = localStorage.getItem('secretIdentity');
+  localStorage.setItem('secretIdentity', test)
+  console.log( localStorage.getItem('secretIdentity'));
   var n = "0";
-  $("body").removeHighlight();
-  $("p.results").hide().empty();
+
   $("body").highlight(test);
   n = $("span.highlight").length;
-  localStorage.setItem('secretIdentity', null)
+
  })

@@ -8,5 +8,6 @@ urlpatterns = [
     path("", views.index, name="index"),
     path("export/", views.export, name="export"),
     path("search/", views.search, name="search"),
-
+    path("full/", views.full, name="full"),
+    path("year/", views.year, name="year"),
 ]

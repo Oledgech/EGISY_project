@@ -1,0 +1,69 @@
+{%extends 'pars/layout.html' %}
+{% load bootstrap_pagination %}
+{% block content %}
+<br>
+<h1>Информация о проекте</h1>
+<br>
+<div class="btn-group">
+  <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+    Экспорт
+  </button>
+  <div class="dropdown-menu">
+    <a class="dropdown-item" href="/export">CSV</a>
+    <a class="dropdown-item" href="/export">JSON</a>
+    <a class="dropdown-item" href="/export">YAML</a>
+    <a class="dropdown-item" href="/export">Excel </a>
+  </div>
+</div>
+<br>
+<br>
+<br>
+<table class="table table-bordered">
+    <tbody>
+{% for contact in projects %}
+<br>
+<h1>{{ contact.name}}</h1>
+<br>
+<tr class='success'>
+        <td>Номер</td>
+        <td>{{ contact.registration_number}}</td>
+</tr>
+<tr class='success'>
+        <td>Название</td>
+        <td>{{ contact.name}}</td>
+</tr>
+<tr class='success'>
+        <td>Исполнитель</td>
+        <td>{{ contact.executor }}</td>
+</tr>
+<tr class='success'>
+        <td>Покупатель</td>
+        <td>{{ contact.customer}}</td>
+</tr>
+<tr class='success'>
+        <td>Тип бюджета</td>
+        <td>{{ contact.budget_type}}</td>
+</tr>
+<tr class='success'>
+        <td>Вид НИОКТР</td>
+        <td>{{ contact.nioktr_types}}</td>
+</tr>
+<tr class='success'>
+        <td>Начало проекта</td>
+        <td>{{contact.start_date}}</td>
+</tr>
+<tr class='success'>
+        <td>Конец проекта</td>
+        <td>{{contact.end_date}}</td>
+</tr>
+<tr class='success'>
+        <td>Аннотация</td>
+        <td>{{ contact.annotation}}</td>
+    </tr>
+
+{% endfor %}
+ </tbody>
+</table>
+
+
+{% endblock %}

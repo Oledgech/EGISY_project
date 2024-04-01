@@ -19,8 +19,50 @@
   /*устанавливаем высоту кнопки*/
   height: 28px;
   margin: 0;
-  color: #ffffff;
+  color: #4682B4;
   padding: 6px;
   /*тоже делаем стильную границу у кнопки*/
   border: 1px solid rgba(0, 0, 0, 0.1);
+}
+button.link {
+  /* Первые два свойства нужны чтобы убрать отступы в IE */
+  overflow: visible;
+  width: auto;
+
+  /* Убираем отступы */
+  margin: 0;
+  padding: 0;
+
+  /* Убираем все элементы оформления кнопки */
+  background: none;
+  border: none;
+     color: #4682B4;
+  /* Обычный для ссылок курсор */
+  cursor: pointer;
+}
+
+/* Ссылка обычно подчеркнута */
+button.link span {
+   color: #4682B4;
+  text-decoration: underline;
+
+
+}
+.card-header-title > a {
+    display: block;
+    position: relative;
+}
+.card-header-title > a:hover {
+    cursor: pointer;
+}
+
+.card-header-title > a:after {
+    content: "\f078"; /* fa-chevron-down */
+    font-family: "Font Awesome 5 Free";
+    font-weight: 900;
+    position: absolute;
+    right: 0;
+}
+.card-header-title > a[aria-expanded="true"]:after {
+    content: "\f077"; /* fa-chevron-up */
 }

@@ -1,33 +1,12 @@
 {%extends 'pars/layout.html' %}
 {% load bootstrap_pagination %}
+{% load static %}
 {% block content %}
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="{% url 'index' %}">ЕГИСУ проект</a>
-  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
 
-  <div class="collapse navbar-collapse" id="navbarSupportedContent">
-    <ul class="navbar-nav mr-auto">
-      <li class="nav-item active">
-        <a class="nav-link" href="#">Год <span class="sr-only">(current)</span></a>
-      </li>
-        <li class="nav-item active">
-        <a class="nav-link" href="#">Исполнитель <span class="sr-only">(current)</span></a>
-      </li>
-<!--      <li class="nav-item">-->
-<!--        <a class="nav-link" href="#">Link</a>-->
-<!--      </li>-->
 
-    </ul>
-    <form class="form-inline my-2 my-lg-0" action="{% url 'search' %}" id="search-highlight">
-      <input class="form-control mr-sm-2" type="text" placeholder="Поиск" aria-label="Search" name="search" id="term">
-      <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="submit">Поиск</button>
-    </form>
 
-  </div>
-</nav>
-<h1>Таблица за 2020 год</h1>
+<br>
+<h1>Всего записей: {{c}}</h1>
 <br>
 <form method="GET">
   {% csrf_token %}
@@ -72,7 +51,13 @@
 
 {% for contact in page_obj %}
 <tr class='success'>
-        <td>{{ contact.registration_number}}</td>
+    <td><form method="GET" action="{% url 'full' %}">
+
+          <input type="hidden" required name = 'id' value = {{contact.id}} >
+          <button type="submit" class="link">{{ contact.registration_number}}</button>
+          {% csrf_token %}
+
+      </form></td>
         <td>{{ contact.name}}</td>
         <td>{{ contact.executor }}</td>
         <td>{{ contact.customer}}</td>

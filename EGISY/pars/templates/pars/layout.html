@@ -8,7 +8,70 @@
 
 </head>
 <body>
+<nav class="navbar navbar-dark bg-dark">
+     <a class="navbar-brand" href="{% url 'index' %}">
+    <img src='{% static "img/logo_mau.png"%}' width="221" height="64" alt="" >
+         <br><h1>ЕГИСУ проект</h1>
+  </a>
 
+
+
+
+</nav>
+<br>
+  <div class="row">
+    <div class="col-12">
+      <div class="accordion " id="accordionExample" >
+        <div class="card" style="border: none;">
+          <div class="card-header" id="heading-1" style="border: none;">
+            <h5 class="mb-0 card-header-title"> <a class="btn btn-link text-left" role="button" data-toggle="collapse" data-target="#collapse-1"  aria-expanded="false" aria-controls="collapse-1"> Поиск </a> </h5>
+          </div>
+          <div id="collapse-1" class="collapse" data-parent="#accordionExample" aria-labelledby="heading-1">
+             <form  action="{% url 'search' %}" id="search-highlight">
+              <br>
+              <input class="form-control mr-sm-2" type="text" placeholder="Поиск по слову" aria-label="Search" name="search" id="term">
+              <br>
+
+              <div class="card-body">
+              <div class="accordion" id="accordion-1">
+                <div class="card" style="border: none;">
+                  <div class="card-header" id="heading-1-1" style="border: none;">
+                    <h5 class="mb-0 card-header-title"> <a class="btn btn-link collapsed" role="button" data-toggle="collapse" data-target="#collapse-1-1" aria-expanded="false" aria-controls="collapse-1-1"> Год</a> </h5>
+                  </div>
+                  <div id="collapse-1-1" class="collapse" data-parent="#accordion-1" aria-labelledby="heading-1-1">
+                    <div class="card-body">
+                    {% for lan in ye%}
+                      <div class="form-check">
+                      <input class="form-check-input" type="checkbox" name="year_{{lan}}" value={{lan}} id="defaultCheck1">
+                      <label class="form-check-label" for="defaultCheck1">
+                        {{ lan }}
+                      </label>
+                      </div>
+                    {% endfor %}
+                    </div>
+                  </div>
+                </div>
+              </div>
+                  <br>
+                  <div class="form-group">
+
+    <select name='type' class="form-control">
+        <option name='option1' value="">Вид НИОКТР</option>
+      <option name='option2' value="Фундаментальное">Фундаментальная НИР</option>
+      <option name='option3' value="Поисковое">Поисковая НИР</option>
+      <option name='option4' value="Опытно-конструкторские">Опытно-конструкторская работа</option>
+      <option name='option5' value="Прикладное">Прикладная НИР</option>
+    </select>
+  </div>
+              </div>
+              <button class="btn btn-outline-success my-2 my-sm-0" type="submit" id="submit">Найти</button>
+                 <button onclick="location.reload(); return false;" class="btn btn-outline-danger my-2 my-sm-0" type="submit">Сброс</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
@@ -17,6 +80,7 @@
 <link rel="stylesheet" href="{% static 'pars/css/main.css'%}">
 <script src="{% static 'pars/js/script.js'%}"></script>
 <script src="https://johannburkard.de/resources/Johann/jquery.highlight-5.js"></script>
+<script src="https://kit.fontawesome.com/29e2d64124.js" crossorigin="anonymous"></script>
 {% block content %}{% load bootstrap_pagination %}{% endblock %}
 </body>
 </html>
