@@ -14,5 +14,10 @@ $(document).ready(function(){
 
   $("body").highlight(test);
   n = $("span.highlight").length;
+   if($(location).attr('href')=='http://127.0.0.1:8000/')
+   {
+   localStorage.setItem('secretIdentity', null)
 
+        $('body').removeHighlight();
+   }
  })

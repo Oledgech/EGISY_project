@@ -1,12 +1,12 @@
 from django.db import models
 class Projects(models.Model):
     name = models.TextField(null=True)
-    registration_number = models.CharField(max_length=100,null=True)
-    executor=models.CharField(max_length=400,null=True)
+    registration_number = models.TextField(null=True)
+    executor=models.TextField(null=True)
     okogu=models.TextField(null=True)
-    customer=models.CharField(max_length=200,null=True)
-    budget_type=models.CharField(max_length=400,null=True)
-    nioktr_types=models.CharField(max_length=400,null=True)
+    customer=models.TextField(null=True)
+    budget_type=models.TextField(null=True)
+    nioktr_types=models.TextField(null=True)
     priority_directions=models.TextField(null=True)
     priority_directions_dop=models.TextField(null=True)
     critical_technologies=models.TextField(null=True)

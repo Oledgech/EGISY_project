@@ -10,24 +10,30 @@
 <br>
 <form method="GET">
   {% csrf_token %}
-  <input type="submit" value="cкачать" name="delete"/>
+  <button type="submit" class="btn btn-info" value="cкачать" name="delete">Cкачать</button>
 </form>
 <br>
 <form method="post">
   {% csrf_token %}
-  <input type="submit" value="заполнить" name="button1"/>
+  <input type="submit" class="btn btn-warning" value="заполнить" name="button1"/>
 </form>
 <br>
 <div class="btn-group">
   <button type="button" class="btn btn-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
     Экспорт
   </button>
+  <form method="GET" action="{% url 'exportall' %}">
+  {% csrf_token %}
+
   <div class="dropdown-menu">
-    <a class="dropdown-item" href="/export">CSV</a>
-    <a class="dropdown-item" href="/export">JSON</a>
-    <a class="dropdown-item" href="/export">YAML</a>
-    <a class="dropdown-item" href="/export">Excel </a>
+
+
+    <button  type="submit" class="dropdown-item" name="Excel" >Excel</button>
+    <button type="submit" class="dropdown-item" name="JSON" >JSON</button>
+    <button type="submit" class="dropdown-item" name="YAML" >YAML</button>
+    <button type="submit" class="dropdown-item" name="CSV" >CSV</button>
   </div>
+  </form>
 </div>
 <br>
 <br>

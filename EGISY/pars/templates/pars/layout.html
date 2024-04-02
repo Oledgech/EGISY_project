@@ -3,8 +3,8 @@
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <title>Title</title>
-
+    <title>ЕГИСУ проект</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'img/table.ico' %}"/>
 
 </head>
 <body>
@@ -36,11 +36,11 @@
               <div class="accordion" id="accordion-1">
                 <div class="card" style="border: none;">
                   <div class="card-header" id="heading-1-1" style="border: none;">
-                    <h5 class="mb-0 card-header-title"> <a class="btn btn-link collapsed" role="button" data-toggle="collapse" data-target="#collapse-1-1" aria-expanded="false" aria-controls="collapse-1-1"> Год</a> </h5>
+                    <h5 class="mb-0 card-header-title"> <a class="btn btn-link text-left"  role="button" data-toggle="collapse" data-target="#collapse-1-1" aria-expanded="false" aria-controls="collapse-1-1"> Год</a> </h5>
                   </div>
                   <div id="collapse-1-1" class="collapse" data-parent="#accordion-1" aria-labelledby="heading-1-1">
                     <div class="card-body">
-                    {% for lan in ye%}
+                    {% for lan in yet%}
                       <div class="form-check">
                       <input class="form-check-input" type="checkbox" name="year_{{lan}}" value={{lan}} id="defaultCheck1">
                       <label class="form-check-label" for="defaultCheck1">
@@ -79,6 +79,7 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
 <link rel="stylesheet" href="{% static 'pars/css/main.css'%}">
 <script src="{% static 'pars/js/script.js'%}"></script>
+
 <script src="https://johannburkard.de/resources/Johann/jquery.highlight-5.js"></script>
 <script src="https://kit.fontawesome.com/29e2d64124.js" crossorigin="anonymous"></script>
 {% block content %}{% load bootstrap_pagination %}{% endblock %}

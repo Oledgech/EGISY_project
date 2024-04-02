@@ -30,7 +30,7 @@
 <br>
 {% bootstrap_paginate page_obj range=30 %}
 <br>
-<h1>Примененные фильтры: {% if search_query%}<button class="btn btn-outline-success my-2 my-sm-0">{{search_query}}</button> {% endif %}{% if option_query%}<button class="btn btn-outline-success my-2 my-sm-0">{{option_query}}</button> {% endif %} {% for i in ye %}<button class="btn btn-outline-success my-2 my-sm-0">{{ i }}</button> {% endfor %} </h1>
+<h1>Примененные фильтры: {% if search_query%}<button class="btn btn-outline-success my-2 my-sm-0">{{search_query}}</button> {% endif %}{% if option_query%}<button class="btn btn-outline-success my-2 my-sm-0">{{option_query}}</button> {% endif %} {% for i in ye %}<button class="btn btn-outline-success my-2 my-sm-0">{{ i }}</button> {% endfor %}  <a class="btn btn-outline-danger my-2 my-sm-0" href="/">Сброс</a> </h1>
 <br>
 <table class="table table-bordered">
   <thead>
@@ -48,8 +48,7 @@
   </thead>
   <tbody>
 
-{% for contact in proj %}
-{% for z in contact %}
+{% for z in page_obj %}
 <tr class='success'>
     <td><form method="GET" action="{% url 'full' %}">
 
@@ -68,7 +67,6 @@
         <td>{{ z.end_date}}</td>
         <td>{{ z.annotation}}</td>
     </tr>
-{% endfor %}
 {% endfor %}
  </tbody>
 </table>

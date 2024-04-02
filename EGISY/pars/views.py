@@ -32,9 +32,9 @@ def index(request):
     print(request)
     year = datetime.now().year
     num = 2016
-    ye = []
+    yet = []
     while num <= year:
-        ye.append(num)
+        yet.append(num)
         num += 1
     projects = Projects.objects.all()
     c = Projects.objects.all().distinct().count()
@@ -44,10 +44,13 @@ def index(request):
     if 'delete' in request.GET:
         number = 2016
         while number <= 2023:
-            url = 'https://www.rosrid.ru/api/open-data?year=' + str(number) + '&month=all_months&card_type=nioktr'
-            response = requests.get(url, verify=False)
-            with open(str(number)+'.json', 'wb') as file:
-                file.write(response.content)
+            if os.path.isfile(str(number) + '.json'):
+                print("Файл уже существует")
+            else:
+                url = 'https://www.rosrid.ru/api/open-data?year=' + str(number) + '&month=all_months&card_type=nioktr'
+                response = requests.get(url, verify=False)
+                with open(str(number)+'.json', 'wb') as file:
+                    file.write(response.content)
             number += 1
     if 'button1' in request.POST:
         with open('2020.json', encoding='utf-8') as f:
@@ -85,7 +88,8 @@ def index(request):
                 proj.coexecutors =''
             i += 1
             proj.save()
-    return render(request, "pars/home.html",{'projects':projects,'page_obj': page_obj,'ye': ye,'c': c})
+            return render(request, "pars/home.html", {'projects': projects, 'page_obj': page_obj, 'yet': yet, 'c': c})
+    return render(request, "pars/home.html",{'projects':projects,'page_obj': page_obj,'yet': yet,'c': c})
 
 def search(request):
     search_query = request.GET.get('search', '')
@@ -104,27 +108,31 @@ def search(request):
     c=0
     if len(ye) == 0:
         projects = Projects.objects.filter((Q(name__icontains=search_query) | Q(annotation__icontains=search_query) | Q(
-            customer__icontains=search_query) | Q(executor__icontains=search_query)), Q(nioktr_types__icontains=option_query))
+            customer__icontains=search_query) | Q(executor__icontains=search_query) | Q(registration_number__icontains=search_query)), Q(nioktr_types__icontains=option_query))
         proj.append(projects)
         paginator = Paginator(projects, 100)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
         c = Projects.objects.filter((
                     Q(name__icontains=search_query) | Q(annotation__icontains=search_query) | Q(
-                customer__icontains=search_query) | Q(executor__icontains=search_query)), Q(nioktr_types__icontains=option_query)).distinct().count()
+                customer__icontains=search_query) | Q(executor__icontains=search_query) | Q(registration_number__icontains=search_query)), Q(nioktr_types__icontains=option_query)).distinct().count()
     else:
-        for i in ye:
-            projects = Projects.objects.filter(Q(
-                start_date__icontains=i),(Q(name__icontains=search_query) | Q(annotation__icontains=search_query) | Q( customer__icontains=search_query) | Q(executor__icontains=search_query)), Q(nioktr_types__icontains=option_query))
-            proj.append(projects)
-            c+= Projects.objects.filter(Q(start_date__icontains=i),(Q(name__icontains=search_query) | Q(annotation__icontains=search_query) | Q( customer__icontains=search_query) | Q(executor__icontains=search_query)), Q(nioktr_types__icontains=option_query)).distinct().count()
-        xs = [None] * c
-        paginator = Paginator( xs, 100)
+        projects = Projects.objects.filter(Q(start_date__year__in=ye), (
+                    Q(name__icontains=search_query) | Q(annotation__icontains=search_query) | Q(
+                customer__icontains=search_query) | Q(executor__icontains=search_query) | Q(
+                registration_number__icontains=search_query)), Q(nioktr_types__icontains=option_query))
+
+        c = Projects.objects.filter(Q(start_date__year__in=ye), (
+                    Q(name__icontains=search_query) | Q(annotation__icontains=search_query) | Q(
+                customer__icontains=search_query) | Q(executor__icontains=search_query) | Q(
+                registration_number__icontains=search_query)),
+                                     Q(nioktr_types__icontains=option_query)).distinct().count()
+        paginator = Paginator(projects, 100)
         page_number = request.GET.get('page')
         page_obj = paginator.get_page(page_number)
     template_name = "pars/search.html"
     return render(request, template_name,
-                  {'page_obj': page_obj,'proj': proj,'ye':ye ,'c':c,'option_query':option_query,'search_query':search_query})
+                  {'page_obj': page_obj,'ye':ye ,'yet':yet ,'c':c,'option_query':option_query,'search_query':search_query})
 def export(request):
     search_query= request.GET.get('projects')
     option_projects = request.GET.get('option')
@@ -139,11 +147,11 @@ def export(request):
         num += 1
     if len(year_projects) == 0:
         projects = Projects.objects.filter((Q(name__icontains=search_query) | Q(annotation__icontains=search_query) | Q(
-            customer__icontains=search_query) | Q(executor__icontains=search_query)),
+            customer__icontains=search_query) | Q(executor__icontains=search_query) | Q(registration_number__icontains=search_query)),
                                            Q(nioktr_types__icontains=option_projects))
     else:
         projects = Projects.objects.filter((Q(name__icontains=search_query) | Q(annotation__icontains=search_query) | Q(
-            customer__icontains=search_query) | Q(executor__icontains=search_query)), Q(nioktr_types__icontains = option_projects),(Q(start_date__year__in= year_projects) ))
+            customer__icontains=search_query) | Q(executor__icontains=search_query) | Q(registration_number__icontains=search_query)), Q(nioktr_types__icontains = option_projects),(Q(start_date__year__in= year_projects) ))
     person_resource = ProjectsResource()
     dataset = person_resource.export(projects)
     if 'Excel' in request.GET:
@@ -159,7 +167,22 @@ def export(request):
         response = HttpResponse(dataset.csv, content_type='text/csv')
         response['Content-Disposition'] = 'attachment; filename="persons.csv"'
     return response
-
+def exportall(request):
+    person_resource = ProjectsResource()
+    dataset = person_resource.export()
+    if 'Excel' in request.GET:
+        response = HttpResponse(dataset.xls,content_type='application/vnd.ms-excel')
+        response['Content-Disposition'] = 'attachment;  filename="persons.xls"'
+    if 'JSON' in request.GET:
+        response = HttpResponse(dataset.json, content_type='application/json')
+        response['Content-Disposition'] = 'attachment; filename="persons.json"'
+    if 'YAML' in request.GET:
+        response = HttpResponse(dataset.yaml, content_type='application/yaml')
+        response['Content-Disposition'] = 'attachment; filename="persons.yaml"'
+    if 'CSV' in request.GET:
+        response = HttpResponse(dataset.csv, content_type='text/csv')
+        response['Content-Disposition'] = 'attachment; filename="persons.csv"'
+    return response
 def full(request):
     id_query = request.GET.get('id')
 
@@ -179,7 +202,7 @@ delay = 10 #время между вызовами функции в секун�
 def do_something(): #вызываемая в отдельном потоке функция в ней и производим действия из следующего шага
     number = datetime.now().year
     if os.path.isfile(str(number) + '.json'):
-        print("Файл существует")
+        print("Файл уже существует")
     else:
         url = 'https://www.rosrid.ru/api/open-data?year=' + str(number) + '&month=all_months&card_type=nioktr'
         if os.path.isfile(url):
